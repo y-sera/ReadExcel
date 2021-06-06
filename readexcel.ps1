@@ -1,9 +1,4 @@
-﻿# 日報一括閲覧マクロ
-# シェルスクリプト実行ポリシーについての記事
-#https://www.atmarkit.co.jp/ait/articles/0805/16/news139.html
-#
-
-#日報の一覧を変数へ格納
+#excelファイルリストを変数へ格納
 $ReportList=dir -NAME | Select-String "^[0-9]{6}.*\.xlsx$" |sort
 
 # 日付の取得
@@ -41,27 +36,12 @@ foreach( $LINE in $ReportList ){
     }
 
 	##テスト用コード
-	echo "名前:" $worksheet.Range("C2").Text 
+	echo "Name:" $worksheet.Range("C2").Text 
 	echo ""
-    echo "今日の目標:" 	
+    echo "Profile:" 	
 	echo $worksheet.Range("B3").Text 
 		
 
-	#echo "名前:" $sheet.Range("Q4").Text 
-	#echo "今日の目標:" 
-	#echo $worksheet.Range("B7").Text 
-	#echo
-	#echo "目標達成に向けた行動:"
-	#echo $worksheet.Range("B9").Text 
-	#echo 
-	#echo "学んだこと: "
-	#echo $worksheet.Range("B11").Text 
-	#echo 
-	#echo "今後の課題:"
-	#echo $worksheet.Range("B7").Text 
-	#echo
-	#echo "所感:"
-	#echo $worksheet.Range("B26").Text
 
 	# キー入力待ち　
 	#参考url https://pig-log.com/powershell-input-pause/
@@ -85,11 +65,9 @@ echo "オブジェクトの解放を行います"
 
 echo "enterキーを押してください"
 
-#やらないといけないこと: フルパスの取得(コマンドプロンプト)
 #日付による分岐(金曜日ならプラス2日)
 #シートの作成
 #オブジェクトの解放チェック
-#文字コードの変更
 
 # $newsheet=$tomrrowmonth + "月" + $tomorrowday + "日"
 # シートHOGE1をコピーする
