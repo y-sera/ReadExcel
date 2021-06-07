@@ -8,16 +8,20 @@ $weekday=Get-Date -Format ddd
 
 
 #新規COMオブジェクト作成
-	$excel = New-Object -ComObject Excel.Application
-	#ウィンドウ起動しない
-	$excel.Visible = $False
-	#読み取り専用警告オフ
-	$excel.DisplayAlerts = $False
+$excel = New-Object -ComObject Excel.Application
+#ウィンドウ起動しない
+$excel.Visible = $False
+#読み取り専用警告オフ
+$excel.DisplayAlerts = $False
+
+#カレントディレクトリの取得
+#相対パスで指定する場合
+#[System.IO.Directory]::SetCurrentDirectory($pwd)
+#絶対パスの取得
+$filepath=(pwd).Path
 
 # 一行ずつ処理する
 foreach( $LINE in $ReportList ){
-    #ファイルフルパスの取得
-    $filepath=(get-item $LINE).DirectoryName
 	
 
 	Clear-Host
