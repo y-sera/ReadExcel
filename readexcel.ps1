@@ -49,6 +49,18 @@ foreach( $LINE in $ReportList ){
 	# キー入力待ち　
 	Write-Host "処理を継続する場合は何かキーを押してください．．．" -NoNewLine
 	[Console]::ReadKey($true) > $null
+
+	#キーボード入力
+	# Write-Host "次ファイル:n  前ファイル:b 日付設定:d シート変更:s メニュー:m ::" -NoNewLine
+	# $keyInfo = [Console]::ReadKey($true)
+       #  swich ($keyInfo.Key){
+	 #  "n" {} #nextfile
+	 #  "b" {} #beforefile
+	 #  "d" {} #day setting
+	 #  "s" {} #sheet change
+	 #  "m" {} #menu 
+	 # }
+	
 	$workbook.Close()
     Clear-Host
 }
