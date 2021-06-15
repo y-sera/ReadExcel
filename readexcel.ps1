@@ -117,7 +117,7 @@ $i=0
 & $ReadExcel
 while ($i -ge 0 -and $i -le ($ReportList.Length-1 )) {
     #キーボード入力
-	 Write-Host "次ファイル:n  前ファイル:b 日付設定:d シート変更:s メニュー:m ::" -NoNewLine
+	 Write-Host "次ファイル:n  前ファイル:b 日付設定:d シート変更:s ファイル選択:f ::" -NoNewLine
 	 $keyInfo = [Console]::ReadKey($true)
      switch ($keyInfo.Key){
 	   "n" {
