@@ -1,12 +1,14 @@
-﻿$ReadExcel = {
-    
+﻿$SetExcel = {
     echo $ReportList[$i]
     #ブックの指定
 	$script:workbook = $excel.Workbooks.Open($filepath+"\"+$ReportList[$i])
 	#シート名
 	$script:sheetname=$month +"月" +$day +"日"
+ 
+}
+$ReadExcel = {
     #シートを指定
-    #今日の日付の分が無ければ一枚目のシートを指定
+    #今日の日付の分が無ければ一枚目のシートを指定   
 	try{
         $script:worksheet = $workbook.Sheets($sheetname)
     } catch{
@@ -31,15 +33,26 @@ Set-Variable -Name worksheet -Scope script
 [System.Runtime.Interopservices.Marshal]::ReleaseComObject($workbook)
 }
 
-$Menu = {
+$selectfile = {
     Clear-Host
     echo "--- excel file list. ---"
-    echo $Reportlist
-    echo "(現在読みこんでるブックの前後を表示させたい)"
+    $k=0
+    $Reportlist | foreach{
+      echo "$k : $_"
+      $k++
+      }
     echo ""
-    echo "sheet list of now book"
-    echo "現在読んでいるシートのリストを表示"
-    echo "出来れば, キー入力で動的にリストを更新できると尚良い"
+    $Reportnum = Read-Host "読み込みたいファイルの番号を指定してください"
+    & $CloseBook
+    try { 
+    	$script:workbook = $excel.Workbooks.Open($filepath+"\"+$ReportList[$Reportnum])
+    } catch { 
+    echo "該当ファイルが存在しないため, 現在のファイルを表示させます"
+    	$script:workbook = $excel.Workbooks.Open($filepath+"\"+$ReportList[$i])
+    }
+    Write-Host "何かキーを押すとシートを表示します．．．" -NoNewLine
+	[Console]::ReadKey($true) > $null
+    Clear-host
 }
 $GetSheet ={
     Clear-Host
@@ -49,12 +62,31 @@ $GetSheet ={
     $_.Name })
     echo ""
     echo "--- sheet list ---"
-    echo $sheetlist
-    echo "シートタイトルを列挙して表示(現在のシートの周り10件)"
-    echo "読みこみたいシート名を指定してください"
-    
+    $j=0
+    $Sheetlist | foreach{
+      echo "$j : $_"
+      $j++
+      }
+    echo ""
+    $sheetnum = Read-Host "読みこみたいシートの番号を指定してください"
+    $script:sheetname= $sheetlist[$sheetnum]
+    Write-Host "何かキーを押すとシートを表示します．．．" -NoNewLine
+	[Console]::ReadKey($true) > $null
+    Clear-host
+
 }
 
+$setdate = {
+    echo ""
+    echo "--- set date ---"
+    echo "読み込むシートの日付を設定します."
+    echo "現在値: $script:sheetname"
+    $month = Read-Host "月:" 
+    $day = Read-Host "日:"
+	$script:sheetname=$month +"月" +$day +"日"
+    echo "シート名は $sheetname に設定されました."
+    echo ""
+}
 
 #カレントディレクトリの取得
 #相対パスで指定する場合
@@ -81,6 +113,7 @@ $excel.DisplayAlerts = $False
 
 
 $i=0
+& $SetExcel
 & $ReadExcel
 while ($i -ge 0 -and $i -le ($ReportList.Length-1 )) {
     #キーボード入力
@@ -93,6 +126,7 @@ while ($i -ge 0 -and $i -le ($ReportList.Length-1 )) {
             Clear-Host
             $i++
             if ($i -ge ($ReportList.Length) ) {break}
+             & $SetExcel
              & $ReadExcel
             } #nextfile
 	   "b" {
@@ -101,18 +135,22 @@ while ($i -ge 0 -and $i -le ($ReportList.Length-1 )) {
             Clear-Host
             $i--
             if ($i -le -1 ) {break}
+            & $SetExcel
             & $ReadExcel
             } #beforefile
 	   "d" {
              write-host "day" 
+             & $setdate
              } #day setting
 	   "s" {
              write-host "sheet"
              & $GetSheet
+             & $ReadExcel
              } #sheet change
-	   "m" { 
-            write-host "menu"
-            & $Menu
+	   "f" { 
+            write-host "file list"
+            & $selectfile
+            & $ReadExcel
              } #menu 
           }
 }
@@ -128,13 +166,6 @@ echo "オブジェクトの解放を行います"
 
 echo "enterキーを押してください"
 
-#日付による分岐(金曜日ならプラス2日)
-#シートの作成
-
-# $newsheet=$tomrrowmonth + "月" + $tomorrowday + "日"
-# シートHOGE1をコピーする
-#$workbook.Worksheets.item($sheetname).copy($workbook.Worksheets.item($newsheet))
-#月から木なら日付の数+1したシートを, 金曜日なら+3した日付のシートをコピーして作成
 
 
 	Write-Host "処理を継続する場合は何かキーを押してください．．．" -NoNewLine
