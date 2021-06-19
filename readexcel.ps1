@@ -1,32 +1,31 @@
 ﻿$SetExcel = {
     echo $FileList[$i]
     $script:workbook = $excel.Workbooks.Open($filepath+"\"+$FileList[$i])
-    $script:sheetname= Read-Host "Please input default sheetname."
- 
 }
 $OpenSheet = {
     try{
         $script:worksheet = $workbook.Sheets($sheetname)
     } catch{
 	echo "!!! No exist the default sheet. Read first sheet."
-        $script:worksheet = $excel.worksheets.Item(1)
+    echo "-------------------"
+    $script:worksheet = $excel.worksheets.Item(1)
     }
 }
 $ReadExcel = {
 	##<< test code.　Please change this part.
-	echo "Name:" $worksheet.Range("C2").Text 
-	echo ""
-        echo "profile:" 
-	echo $worksheet.Range("B3").Text 
+    $name=$worksheet.Range("C2").Text 
+	echo "Name: $name"
+	$profile=$worksheet.Range("C3").Text 
+	echo "profile: $profile" 
         ## << test code.
 }
 
 $CloseBook = {
      Set-Variable -Name workbook -Scope script
      Set-Variable -Name worksheet -Scope script
-     [System.Runtime.Interopservices.Marshal]::ReleaseComObject($worksheet)
+     [System.Runtime.Interopservices.Marshal]::ReleaseComObject($worksheet) > $null
      $workbook.Close()
-     [System.Runtime.Interopservices.Marshal]::ReleaseComObject($workbook)
+     [System.Runtime.Interopservices.Marshal]::ReleaseComObject($workbook) > $null
 }
 
 $SelectFile = {
@@ -44,7 +43,8 @@ $SelectFile = {
     	$script:workbook = $excel.Workbooks.Open($filepath+"\"+$FileList[$Filenum])
     } catch { 
         echo "!!! No exist this file. Reread previous file."
-    	$script:workbook = $excel.Workbooks.Open($filepath+"\"+$FileList[$i])
+    	echo "-------------------"
+        $script:workbook = $excel.Workbooks.Open($filepath+"\"+$FileList[$i])
     }
     Write-Host "Please any key．．．" -NoNewLine
     [Console]::ReadKey($true) > $null
@@ -65,7 +65,7 @@ $GetSheet ={
       $j++
       }
     echo ""
-    $sheetnum = Read-Host "Please select sheet number to read."
+    $sheetnum = Read-Host "Please select sheet number to read"
     $script:sheetname= $sheetlist[$sheetnum]
     Write-Host "Please any key．．．" -NoNewLine
     [Console]::ReadKey($true) > $null
@@ -91,6 +91,7 @@ $excel = New-Object -ComObject Excel.Application
 $excel.Visible = $False
 $excel.DisplayAlerts = $False
 
+$script:sheetname= Read-Host "Please input default sheetname"
 
 $i=0
 & $SetExcel
@@ -98,52 +99,52 @@ $i=0
 & $ReadExcel
 while ($i -ge 0 -and $i -le ($FileList.Length-1 )) {
     	# Keyboad input
-	Write-Host "Next file:n  Before file:b  SheetName Setting:n  Sheet Select:s File Select:f ::" -NoNewLine
+	Write-Host "Next file: n,  Before file: b,  Default SheetName: d,  Sheet Select: s,  File Select: f :" -NoNewLine
 	$keyInfo = [Console]::ReadKey($true)
 	switch ($keyInfo.Key){
 	   "n" { #nextfile
            	Write-Host "next"
            	& $Closebook
-            	Clear-Host
-            	$i++
-            	if ($i -ge ($FileList.Length) ) {break}
-            	& $SetExcel
+            Clear-Host
+            $i++
+            if ($i -ge ($FileList.Length) ) {break}
+            & $SetExcel
            	& $OpenSheet
-		& $ReadExcel
-            } 
+		    & $ReadExcel
+           } 
 	   "b" { #before file
         	write-host "before"
-             	& $Closebook
-              	Clear-Host
-              	$i--
-              	if ($i -le -1 ) {break}
-              	& $SetExcel
-              	& $OpenSheet
-		& $ReadExcel
-            } 
-	   "n" { #sheet name setting
-             	write-host "Sheet Name" 
-             	& $SetSheetName
-             } 
+            & $Closebook
+            Clear-Host
+            $i--
+            if ($i -le -1 ) {break}
+            & $SetExcel
+            & $OpenSheet
+		    & $ReadExcel
+           } 
+	   "d" { #default sheet name setting
+            write-host "Default Sheet Name" 
+            & $SetSheetName
+           } 
 	   "s" { #sheet select
-             	write-host "Sheet Select"
-             	& $GetSheet
-             	& $OpenSheet
-		& $ReadExcel
-             } 
+            write-host "Sheet Select"
+            & $GetSheet
+            & $OpenSheet
+		    & $ReadExcel
+           } 
 	   "f" { # file select
-            	write-host "File List"
-            	& $SelectFile
-            	& $OpenSheet
-		& $ReadExcel
-             } 
+            write-host "File List"
+            & $SelectFile
+            & $OpenSheet
+		    & $ReadExcel
+           } 
           }
 }
 $excel.Quit()
 
 echo "Finish read."
 
-[System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel)
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) > $null
 
 Write-Host "Please any key to finish．．．" -NoNewLine
 [Console]::ReadKey($true) > $null
